@@ -1,0 +1,54 @@
+---
+import { type FileType, getAllFiles } from '@/util/files';
+import { permalink } from "@/util/link";
+
+import FilePreview from '@/components/FilePreview.astro';
+import DirectoryPreview from '@/components/DirectoryPreview.astro';
+import Layout from '@/layouts/Layout.astro';
+
+export function getStaticPaths() {
+  return getAllFiles();
+}
+
+interface Props {
+  path: string,
+  type: FileType,
+}
+
+const { path, type } = Astro.props;
+---
+
+<Layout title={`Viewing: ${path}`}>
+  <div class="breadcrumbs">
+    <a class="breadcrumb" href={permalink("/browse/")}>root</a>
+    {path.split('/').filter(Boolean).map((segment: string, i: number, arr: any[]) => {
+        let pathSoFar = arr.slice(0, i + 1).join('/');
+
+        if (i < arr.length - (type == 'file' ? 1 : 0)) pathSoFar += '/';
+
+        return [
+          ' / ', <a class="breadcrumb" href={permalink(`/browse/${pathSoFar}`)}>{segment}</a>
+        ];
+    })}
+  </div>
+
+  {type == 'file' ? (
+    <FilePreview path={path} />
+  ) : (
+    <DirectoryPreview path={path} /> 
+  )}
+</Layout>
+
+<style>
+  .breadcrumbs { 
+    margin-bottom: 20px; 
+    padding: 10px; 
+    background: var(--bg2-color); 
+    border-radius: 4px; 
+  }
+
+  .breadcrumb {
+    color: var(--active-text-color);
+    text-decoration: wavy;
+  }
+</style>

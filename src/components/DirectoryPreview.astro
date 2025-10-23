@@ -1,0 +1,43 @@
+---
+import { scanDirectory } from '@/util/files';
+import FileEntryItem from './FileEntryItem.astro';
+import FilePreview from './FilePreview.astro';
+
+interface Props {
+    path: string,
+}
+
+const { path } = Astro.props;
+
+const isRoot = path === '/';
+const items = scanDirectory(path);
+
+const readme = items.filter(val => val.type === 'file').find(val => val.path.toLowerCase().endsWith("readme.md")) ?? null;
+
+if (!isRoot) items.push({ path: '../', type: 'directory' });
+---
+
+{!items ? (
+    <p>This directory is empty.</p>
+) : (
+    <ul class="file-list">
+        {items
+            .filter(v => v.path)
+            .sort((a, b) => a.type.localeCompare(b.type) || a.path.localeCompare(b.path))
+            .map(item => {
+                return (<FileEntryItem parent={path} {...item} />);
+            })
+        }
+    </ul>
+)}
+
+{readme && (
+    <FilePreview path={readme.path}/>
+)}
+
+<style>
+    .file-list { 
+        list-style: none; 
+        padding: 0;
+    }
+</style>

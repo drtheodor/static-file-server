@@ -1,0 +1,58 @@
+---
+import { Code } from 'astro:components';
+
+import { permalink } from "@/util/link";
+import { readLocal, isText, isImage, getExt } from "@/util/files";
+
+const { path } = Astro.props;
+
+const fileName: string = path.split('/').pop() ?? '/';
+const ext: string = getExt(fileName);
+---
+  
+<div class="file-actions">
+  <pre class="file-name">{fileName}</pre>
+  <a href={permalink(path)} class="button" download>Download</a>
+  <a href={permalink("/")} class="button">Home</a>
+</div>
+
+{isText(ext) ? (
+  <Code class="raw-text" code={readLocal(path)} lang={ext} />
+) : isImage(ext) ? (
+  <img src={path} alt={fileName} />
+) : (
+  <p>This file type cannot be previewed. Please download to view.</p>
+)}
+
+<style>
+  .file-actions {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  
+  .button {
+    display: inline-block;
+    padding: 8px 16px;
+    background: #0070f3;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    width: max-content;
+  }
+  
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .file-name {
+    width: 100%;
+    font-weight: bold;
+    font-size: large;
+    margin: 0;
+  } 
+</style>

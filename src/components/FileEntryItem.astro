@@ -1,0 +1,62 @@
+---
+import type { FileType } from '@/util/files'
+import { permalink } from '@/util/link';
+
+interface Props {
+    parent: string,
+    path: string,
+    type: FileType,
+}
+
+const { parent, path, type } = Astro.props;
+---
+
+<li class="card">
+    {type === 'directory' ? (<svg class="file-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-folder-icon lucide-folder"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg>) : (<svg class="file-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-icon lucide-file"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>)}
+    
+    <a class="file-name" href={path}>{path}</a>
+    
+    {type === 'file' && (
+        <div class="file-actions">
+            <a href={permalink(parent, path)} class="button" download>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-download-icon lucide-download"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>
+            </a>
+        </div>
+    )}
+</a>
+
+<style>
+    .file-actions { 
+        display: flex; 
+        gap: 10px; 
+    }
+    
+    .button { 
+        height: 100%;
+        aspect-ratio: 1 / 1;
+        padding: 4px;
+        background: var(--primary-color); 
+        color: white; 
+        text-decoration: none; 
+        border-radius: 4px; 
+        font-size: 14px; 
+    }
+    
+    .button.secondary { 
+        background: #666; 
+    }
+
+    .file-name { 
+        flex-grow: 1; 
+        width: 100%; 
+    }
+    
+    .file-icon { 
+        height: 100%;
+        align-content: center;
+        margin-right: 5px; 
+        width: 24px; 
+        text-align: center; 
+        vertical-align: middle;
+    }
+</style>
