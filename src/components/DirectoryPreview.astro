@@ -32,7 +32,7 @@ if (!isRoot) items.push({ path: '../', type: 'directory' });
 )}
 
 {readme && (
-    <FilePreview path={readme.path}/>
+    <FilePreview path={readme.path} renderIfEmpty={false} />
 )}
 
 <style>

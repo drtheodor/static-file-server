@@ -1,27 +1,25 @@
 ---
-import { Code } from 'astro:components';
-
 import { permalink } from "@/util/link";
-import { readLocal, isText, isImage, getExt } from "@/util/files";
+import { readLocal, isText, isImage, getExt, isCode } from "@/util/files";
+import Renderer from './Renderer.astro';
 
-const { path } = Astro.props;
+const { path, renderIfEmpty = true } = Astro.props;
 
 const fileName: string = path.split('/').pop() ?? '/';
 const ext: string = getExt(fileName);
----
-  
-<div class="file-actions">
-  <pre class="file-name">{fileName}</pre>
-  <a href={permalink(path)} class="button" download>Download</a>
-  <a href={permalink("/")} class="button">Home</a>
-</div>
 
-{isText(ext) ? (
-  <Code class="raw-text" code={readLocal(path)} lang={ext} />
-) : isImage(ext) ? (
-  <img src={path} alt={fileName} />
-) : (
-  <p>This file type cannot be previewed. Please download to view.</p>
+const content = isCode(ext) || isText(ext) ? readLocal(path) : null;
+const canRender = isImage(ext) || renderIfEmpty || content
+---
+
+{canRender && (
+  <div class="file-actions">
+    <pre class="file-name">{fileName}</pre>
+    <a href={permalink(path)} class="button" download>Download</a>
+    <a href={permalink("/")} class="button">Home</a>
+  </div>
+
+  <Renderer path={path} />
 )}
 
 <style>

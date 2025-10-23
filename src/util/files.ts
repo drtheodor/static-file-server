@@ -9,11 +9,19 @@ type FileEntry = {
 }
 
 const TEXTS = [
-  'txt', 'md', 'html', 'css', 'js', 'json', 'bat', 'xml', 'py', 'java'
+  'txt', 'md'
 ];
 
 export function isText(ext: string): boolean {
   return TEXTS.indexOf(ext) !== -1;
+}
+
+const CODES = [
+  'html', 'css', 'js', 'json', 'bat', 'xml', 'py', 'java'
+];
+
+export function isCode(ext: string): boolean {
+  return CODES.indexOf(ext) !== -1;
 }
 
 const IMGS = [

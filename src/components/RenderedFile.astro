@@ -1,0 +1,9 @@
+---
+import { readLocal } from "@/util/files";
+import { render } from "astro:content";
+
+const { path } = Astro.props;
+
+const { Content } = await render(readLocal(path));
+---
+
