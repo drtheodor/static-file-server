@@ -66,6 +66,8 @@ export function scanDirectory(
   }
 
   for (const file of files) {
+    if (file.startsWith('.')) continue;
+    
     const relativePath = path.posix.join(base, file);
     const fullPath = path.join(BASE_PATH, dir, relativePath);
     const stat = fs.statSync(fullPath);
