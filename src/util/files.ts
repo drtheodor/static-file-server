@@ -104,4 +104,12 @@ export function getAllFiles(dir: string = ''): Array<{
   }));
 }
 
-fs.writeFileSync('public/files.json', JSON.stringify(ALL_FILES));
+let indexGenerated = false;
+
+export function writeIndex() {
+  if (indexGenerated) return;
+  fs.writeFileSync('public/files.json', JSON.stringify(ALL_FILES));
+  indexGenerated = true;
+}
+
+writeIndex()

@@ -1,4 +1,5 @@
 // @ts-check
+import { writeIndex } from '@/util/files';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
@@ -6,6 +7,14 @@ import { defineConfig } from 'astro/config';
 export default defineConfig({
     output: 'static',
     prefetch: true,
+    integrations: [
+        {
+            name: 'Generate index',
+            hooks: {
+                'astro:build:start': writeIndex,
+            },
+        },
+    ],
     vite: {
         plugins: [tailwindcss()]
     },
