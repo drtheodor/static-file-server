@@ -1,0 +1,156 @@
+---
+
+
+const baseURL = import.meta.env.BASE_URL;
+---
+
+<div class="search-container">
+  <input type="text" id="searchInput" placeholder="Search files..." />
+  <div class="results-info">
+    <span id="resultsCount">Enter search term to see results</span>
+  </div>
+  <div id="resultsContainer">
+    <ul id="fileList"></ul>
+  </div>
+</div>
+
+<style>
+      .search-container {
+    padding: 10px;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  #searchInput {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+  }
+
+  .results-info {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .file-item {
+    padding: 10px;
+    border: 1px solid #eee;
+    margin: 5px 0;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .file-item:hover {
+    background-color: #f5f5f5;
+  }
+
+  .highlight {
+    background-color: yellow;
+    font-weight: bold;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 20px;
+  }
+</style>
+
+<script>
+  let files;
+
+  // Load files from JSON file
+  async function loadFiles() {
+    try {
+      const response = await fetch(import.meta.env.BASE_URL + '/files.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      files = await response.json();
+      console.log(`Loaded ${files.length} files`);
+    } catch (error) {
+      console.error('Error loading files:', error);
+      // Fallback to empty array or show error message
+      files = [];
+    }
+  }
+
+  // Wait for DOM to load, then load files and set up search
+  document.addEventListener('astro:page-load', async () => {
+    await loadFiles();
+    setupSearch();
+  });
+
+  // Configuration
+  const MAX_RESULTS = 50;
+  const MIN_SEARCH_LENGTH = 3;
+
+  function fuzzySearch(query, items) {
+    if (!query || query.length < MIN_SEARCH_LENGTH) {
+      return [];
+    }
+    
+    const results = items.filter(item => {
+      const lowerQuery = query.toLowerCase();
+      const lowerItem = item.path.toLowerCase();
+      
+      let queryIndex = 0;
+      for (let i = 0; i < lowerItem.length && queryIndex < lowerQuery.length; i++) {
+        if (lowerItem[i] === lowerQuery[queryIndex]) {
+          queryIndex++;
+        }
+      }
+      return queryIndex === lowerQuery.length;
+    });
+    
+    return results.slice(0, MAX_RESULTS);
+  }
+
+  function highlightMatch(text, query) {
+    if (!query) return text;
+    
+    const regex = new RegExp(`(${query})`, 'gi');
+    return `<a href="${import.meta.env.BASE_URL}/browse/${text}">` + text.replace(regex, '<span class="highlight">$1</span>') + "</a>";
+  }
+
+  function displayResults(results, query) {
+    const list = document.getElementById('fileList');
+    const countElement = document.getElementById('resultsCount');
+    
+    list.innerHTML = '';
+    
+    if (!query || query.length < MIN_SEARCH_LENGTH) {
+      countElement.textContent = 'Enter search term to see results';
+      return;
+    }
+    
+    if (results.length === 0) {
+      countElement.textContent = 'No files found';
+      list.innerHTML = '';
+      return;
+    }
+    
+    countElement.textContent = `Found ${results.length} file${results.length !== 1 ? 's' : ''}`;
+    
+    results.forEach(file => {
+      const li = document.createElement('li');
+      li.className = 'file-item';
+      li.innerHTML = highlightMatch(file.path, query);
+      list.appendChild(li);
+    });
+  }
+
+  function setupSearch() {
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const query = e.target.value;
+        const results = fuzzySearch(query, files);
+        displayResults(results, query);
+      }, 150);
+    });
+  }
+</script>

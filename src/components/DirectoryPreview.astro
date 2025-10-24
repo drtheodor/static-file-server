@@ -12,7 +12,7 @@ const { path } = Astro.props;
 const isRoot = path === '/';
 const items = scanDirectory(path);
 
-const readme = items.filter(val => val.type === 'file').find(val => val.path.toLowerCase().endsWith("readme.md")) ?? null;
+const readme = items.filter(val => val.type === 'file').find(val => val.path.toLowerCase().startsWith("readme")) ?? null;
 
 if (!isRoot) items.push({ path: '../', type: 'directory' });
 ---
@@ -37,7 +37,10 @@ if (!isRoot) items.push({ path: '../', type: 'directory' });
 
 <style>
     .file-list { 
-        list-style: none; 
+        display: grid;
+        grid-template-rows: repeat(minmax(50px, 1fr));
+        gap: 10px;
+        list-style: none;
         padding: 0;
     }
 </style>

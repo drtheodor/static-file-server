@@ -92,14 +92,16 @@ export function scanDirectory(
   return results;
 }
 
+export const ALL_FILES = scanDirectory('', { recursive: true });
+
 export function getAllFiles(dir: string = ''): Array<{
   params: { path: string };
   props: FileEntry;
 }> {
-  const files = scanDirectory(dir, { recursive: true });
-
-  return files.map(file => ({
+  return ALL_FILES.map(file => ({
     params: { path: file.path },
     props: { ...file }
   }));
 }
+
+fs.writeFileSync('public/files.json', JSON.stringify(ALL_FILES));

@@ -1,16 +1,17 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
-const BASE_URL = '/maven';
+import { writeFileSync, mkdirSync } from 'fs';
+import { join } from 'path';
 
 // https://astro.build/config
 export default defineConfig({
     output: 'static',
-    base: BASE_URL,
+    prefetch: true,
     redirects: {
         '/': {
             status: 302,
-            destination: `${BASE_URL}/browse/`,
+            destination: `browse/`,
         },
     },
 });

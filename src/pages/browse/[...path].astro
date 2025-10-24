@@ -5,6 +5,7 @@ import { permalink } from "@/util/link";
 import FilePreview from '@/components/FilePreview.astro';
 import DirectoryPreview from '@/components/DirectoryPreview.astro';
 import Layout from '@/layouts/Layout.astro';
+import Search from '@/components/Search.astro';
 
 export function getStaticPaths() {
   return getAllFiles();
@@ -30,6 +31,9 @@ const { path, type } = Astro.props;
           ' / ', <a class="breadcrumb" href={permalink(`/browse/${pathSoFar}`)}>{segment}</a>
         ];
     })}
+
+    <Search />
+
   </div>
 
   {type == 'file' ? (
@@ -40,7 +44,7 @@ const { path, type } = Astro.props;
 </Layout>
 
 <style>
-  .breadcrumbs { 
+  .breadcrumbs {
     margin-bottom: 20px; 
     padding: 10px; 
     background: var(--bg2-color); 
