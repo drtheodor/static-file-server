@@ -9,7 +9,7 @@ const ext: string = getExt(fileName);
 ---
 
 { isText(ext) || isCode(ext) ? (
-    <Code class="raw-text" code={readLocal(path)} lang={ext} />
+    <Code class="p-4 mockup-code" code={readLocal(path)} lang={ext} />
 ) : isImage(ext) ? (
     <img src={path} alt={fileName} />
 ) : (

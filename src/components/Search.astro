@@ -1,33 +1,21 @@
 ---
-
-
-const baseURL = import.meta.env.BASE_URL;
+import SearchIcon from '@/assets/icons/search.svg';
 ---
 
-<div class="search-container">
-  <input type="text" id="searchInput" placeholder="Search files..." />
-  <div class="results-info">
-    <span id="resultsCount">Enter search term to see results</span>
-  </div>
-  <div id="resultsContainer">
-    <ul id="fileList"></ul>
-  </div>
+<div class="dropdown dropdown-end w-full">
+  <label class="input w-full">
+    <SearchIcon class="h-[1em] opacity-50" />
+    <input type="search" id="searchInput" required placeholder="Search" autocomplete="off" />
+    <kbd class="kbd">Ctrl</kbd><kbd class="kbd">K</kbd>
+  </label>
+  <ul id="searchResults" class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm w-full"></ul>
 </div>
 
 <style>
-      .search-container {
+  .search-container {
     padding: 10px;
     width: 100%;
     margin-top: 20px;
-  }
-
-  #searchInput {
-    width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    margin-bottom: 15px;
   }
 
   .results-info {
@@ -35,17 +23,6 @@ const baseURL = import.meta.env.BASE_URL;
     font-size: 14px;
   }
 
-  .file-item {
-    padding: 10px;
-    border: 1px solid #eee;
-    margin: 5px 0;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .file-item:hover {
-    background-color: #f5f5f5;
-  }
 
   .highlight {
     background-color: yellow;
@@ -59,12 +36,16 @@ const baseURL = import.meta.env.BASE_URL;
 </style>
 
 <script>
-  let files;
+  import { staticBrowse, staticPermalink } from "@/util/link";
+
+  type FileEntry = { path: string }
+
+  let files: FileEntry[];
 
   // Load files from JSON file
   async function loadFiles() {
     try {
-      const response = await fetch(import.meta.env.BASE_URL + '/files.json');
+      const response = await fetch(staticPermalink('files.json'));
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -77,6 +58,15 @@ const baseURL = import.meta.env.BASE_URL;
     }
   }
 
+  document.addEventListener("keydown", (event) => {
+    if (event.ctrlKey && event.key === "k") {
+      event.preventDefault(); // Prevent default browser behavior (e.g., opening a search bar)
+
+      const list = document.getElementById('searchInput') as HTMLElement;
+      list.focus();
+    }
+  });
+
   // Wait for DOM to load, then load files and set up search
   document.addEventListener('astro:page-load', async () => {
     await loadFiles();
@@ -87,7 +77,7 @@ const baseURL = import.meta.env.BASE_URL;
   const MAX_RESULTS = 50;
   const MIN_SEARCH_LENGTH = 3;
 
-  function fuzzySearch(query, items) {
+  function fuzzySearch(query: string, items: FileEntry[]) {
     if (!query || query.length < MIN_SEARCH_LENGTH) {
       return [];
     }
@@ -108,49 +98,55 @@ const baseURL = import.meta.env.BASE_URL;
     return results.slice(0, MAX_RESULTS);
   }
 
-  function highlightMatch(text, query) {
-    if (!query) return text;
-    
-    const regex = new RegExp(`(${query})`, 'gi');
-    return `<a href="${import.meta.env.BASE_URL}/browse/${text}">` + text.replace(regex, '<span class="highlight">$1</span>') + "</a>";
+  function addResult(text: string, url: string, list: HTMLElement) {
+    const li = document.createElement('li');
+    li.innerHTML = `<a href="${url ? staticBrowse(url) : ''}">${text}</a>`;
+    list.appendChild(li);
   }
 
-  function displayResults(results, query) {
-    const list = document.getElementById('fileList');
-    const countElement = document.getElementById('resultsCount');
-    
+  function displayResults(results: any[], query: string) {
+    const list = document.getElementById('searchResults') as HTMLElement;
     list.innerHTML = '';
     
     if (!query || query.length < MIN_SEARCH_LENGTH) {
-      countElement.textContent = 'Enter search term to see results';
+      addResult('Press Enter to go to the first result.', '', list);
       return;
     }
     
     if (results.length === 0) {
-      countElement.textContent = 'No files found';
-      list.innerHTML = '';
+      addResult('Nothing found.', '', list);
       return;
     }
-    
-    countElement.textContent = `Found ${results.length} file${results.length !== 1 ? 's' : ''}`;
-    
-    results.forEach(file => {
-      const li = document.createElement('li');
-      li.className = 'file-item';
-      li.innerHTML = highlightMatch(file.path, query);
-      list.appendChild(li);
-    });
+
+    results.map(v => v.path).reverse().forEach(file => addResult(file, file, list));
   }
 
   function setupSearch() {
-    let searchTimeout;
-    document.getElementById('searchInput').addEventListener('input', (e) => {
+    const input = document.getElementById('searchInput') as HTMLInputElement;
+
+    let searchTimeout: any;
+
+    input.addEventListener('input', ({ target }) => {
       clearTimeout(searchTimeout);
+      
       searchTimeout = setTimeout(() => {
-        const query = e.target.value;
+        const query = target!.value;
         const results = fuzzySearch(query, files);
         displayResults(results, query);
       }, 150);
     });
+
+    input.addEventListener('keyup', (e) => {
+      if (e.key === 'Enter') {
+        const result = document.getElementById('searchResults') as HTMLElement;
+        const anchor = result.querySelector('a') as HTMLAnchorElement;
+
+        if (window.location.href !== anchor.href) {
+          window.location.href = anchor.href;
+        }
+      }
+    });
+
+    displayResults([], '');
   }
 </script>

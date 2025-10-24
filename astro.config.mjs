@@ -1,13 +1,14 @@
 // @ts-check
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
-
-import { writeFileSync, mkdirSync } from 'fs';
-import { join } from 'path';
 
 // https://astro.build/config
 export default defineConfig({
     output: 'static',
     prefetch: true,
+    vite: {
+        plugins: [tailwindcss()]
+    },
     redirects: {
         '/': {
             status: 302,

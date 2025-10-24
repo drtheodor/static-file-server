@@ -1,7 +1,8 @@
 ---
 import { ClientRouter, fade, slide } from "astro:transitions";
+import FavIcon from "@/assets/favicon.svg";
 
-import "@/styles/global.css";
+import "@/assets/app.css";
 
 type Props = {
   title: string,
@@ -31,10 +32,12 @@ const anim = animFunc ? animFunc({ duration }) : "none";
 ---
 
 <!DOCTYPE html>
-<html lang="en" transition:name="root" transition:animate="none">
+<html lang="en" transition:name="root" transition:animate="none" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="icon" type="image/svg+xml" href={FavIcon.src} />
   <title>{title}</title>
 
   <ClientRouter />
@@ -44,8 +47,10 @@ const anim = animFunc ? animFunc({ duration }) : "none";
     <slot />
   </main>
 
-  <footer>
-    <a href="https://github.com/drtheodor/static-file-server">static-file-server</a> by @<a href="https://github.com/drtheodor">drtheodor</a>.
+  <footer class="footer sm:footer-horizontal footer-center bg-base-300 text-base-content p-4 mt-8 rounded-lg">
+    <aside><p>
+      <a href="https://github.com/drtheodor/static-file-server" class="link link-accent">static-file-server</a> by @<a href="https://github.com/drtheodor" class="link link-accent">drtheodor</a>.
+    </p></aside>
   </footer>
 </body>
 <style>
@@ -55,16 +60,6 @@ const anim = animFunc ? animFunc({ duration }) : "none";
     margin: 0 auto; 
     padding: 20px; 
     line-height: 1.6;
-  }
-  footer {
-    border-top: 2px solid var(--bg4-color);
-    margin: 50px 0;
-    padding-top: 20px;
-    text-align: center;
-  }
-
-  footer > a {
-    color: var(--primary-color);
   }
 </style>
 </html>

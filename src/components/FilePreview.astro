@@ -1,7 +1,10 @@
 ---
 import { permalink } from "@/util/link";
 import { readLocal, isText, isImage, getExt, isCode } from "@/util/files";
+
 import Renderer from './Renderer.astro';
+
+import DownloadIcon from '@/assets/icons/download.svg';
 
 const { path, renderIfEmpty = true } = Astro.props;
 
@@ -15,8 +18,10 @@ const canRender = isImage(ext) || renderIfEmpty || content
 {canRender && (
   <div class="file-actions">
     <pre class="file-name">{fileName}</pre>
-    <a href={permalink(path)} class="button" download>Download</a>
-    <a href={permalink("/")} class="button">Home</a>
+    <a href={permalink(path)} class="btn btn-accent" download>
+      <DownloadIcon class="size-[1.5em]" />
+      Download
+    </a>
   </div>
 
   <Renderer path={path} />
@@ -52,5 +57,5 @@ const canRender = isImage(ext) || renderIfEmpty || content
     font-weight: bold;
     font-size: large;
     margin: 0;
-  } 
+  }
 </style>

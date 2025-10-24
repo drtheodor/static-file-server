@@ -1,11 +1,13 @@
 ---
 import { type FileType, getAllFiles } from '@/util/files';
-import { permalink } from "@/util/link";
+import { browse } from "@/util/link";
 
 import FilePreview from '@/components/FilePreview.astro';
 import DirectoryPreview from '@/components/DirectoryPreview.astro';
 import Layout from '@/layouts/Layout.astro';
 import Search from '@/components/Search.astro';
+
+import ChevronIcon from '@/assets/icons/chevron-right.svg';
 
 export function getStaticPaths() {
   return getAllFiles();
@@ -20,21 +22,23 @@ const { path, type } = Astro.props;
 ---
 
 <Layout title={`Viewing: ${path}`}>
-  <div class="breadcrumbs">
-    <a class="breadcrumb" href={permalink("/browse/")}>root</a>
-    {path.split('/').filter(Boolean).map((segment: string, i: number, arr: any[]) => {
-        let pathSoFar = arr.slice(0, i + 1).join('/');
+  <div class="breadcrumbs text-sm">
+    <ul>
+      <li><ChevronIcon class="size-5 mr-1" /><a class="link link-accent" href={browse('/')}>~ / </a></li>
+      {path.split('/').filter(Boolean).map((segment: string, i: number, arr: any[]) => {
+          let pathSoFar = arr.slice(0, i + 1).join('/');
 
-        if (i < arr.length - (type == 'file' ? 1 : 0)) pathSoFar += '/';
+          if (i < arr.length - (type == 'file' ? 1 : 0)) pathSoFar += '/';
 
-        return [
-          ' / ', <a class="breadcrumb" href={permalink(`/browse/${pathSoFar}`)}>{segment}</a>
-        ];
-    })}
-
-    <Search />
-
+          return <li><a class="link link-accent" href={browse(pathSoFar)}>{segment}</a></li>;
+      })}
+    </ul>
   </div>
+
+  <div class="divider">
+    <Search />
+  </div>
+
 
   {type == 'file' ? (
     <FilePreview path={path} />
@@ -43,16 +47,3 @@ const { path, type } = Astro.props;
   )}
 </Layout>
 
-<style>
-  .breadcrumbs {
-    margin-bottom: 20px; 
-    padding: 10px; 
-    background: var(--bg2-color); 
-    border-radius: 4px; 
-  }
-
-  .breadcrumb {
-    color: var(--active-text-color);
-    text-decoration: wavy;
-  }
-</style>

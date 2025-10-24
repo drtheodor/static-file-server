@@ -17,23 +17,24 @@ const readme = items.filter(val => val.type === 'file').find(val => val.path.toL
 if (!isRoot) items.push({ path: '../', type: 'directory' });
 ---
 
-{!items ? (
-    <p>This directory is empty.</p>
-) : (
-    <ul class="file-list">
-        {items
-            .filter(v => v.path)
-            .sort((a, b) => a.type.localeCompare(b.type) || a.path.localeCompare(b.path))
-            .map(item => {
-                return (<FileEntryItem parent={path} {...item} />);
-            })
-        }
-    </ul>
-)}
+<ul class="list bg-base-100 rounded-box shadow-md">
+    {items
+        .filter(v => v.path)
+        .sort((a, b) => a.type.localeCompare(b.type) || a.path.localeCompare(b.path))
+        .map(item => {
+            return (<FileEntryItem parent={path} {...item} />);
+        })
+    }
 
-{readme && (
+    {!items && (
+            <li class="p-4 pb-2 text-xs opacity-60 tracking-wide">This directory is empty.</li>
+        <p>This directory is empty.</p>
+    )}
+</ul>
+
+{ readme && (
     <FilePreview path={readme.path} renderIfEmpty={false} />
-)}
+) }
 
 <style>
     .file-list { 
