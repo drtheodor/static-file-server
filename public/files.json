@@ -1,1 +1,0 @@
-[{"path":"/","type":"directory"},{"path":"test/","type":"directory"},{"path":"test/andanotherfolder/","type":"directory"},{"path":"test/andanotherfolder/file.txt","type":"file"},{"path":"test/andanotherfolder/test.txt","type":"file"},{"path":"test/anotherfile.txt","type":"file"},{"path":"README.md","type":"file"},{"path":"d/","type":"directory"},{"path":"e.txt","type":"file"}]
