@@ -2,16 +2,23 @@
 import { getExt, isCode, isImage, isText, readLocal } from "@/util/files";
 import { Code } from "astro:components";
 
-const { path } = Astro.props;
+const { path, renderIfEmpty } = Astro.props;
 
 const fileName: string = path.split('/').pop() ?? '/';
 const ext: string = getExt(fileName);
+
+const isTextLike = isCode(ext) || isText(ext)
+const content = isTextLike ? readLocal(path) : null;
 ---
 
-{ isText(ext) || isCode(ext) ? (
-    <Code class="p-4 mockup-code" code={readLocal(path)} lang={ext} />
-) : isImage(ext) ? (
+{ isImage(ext) ? (
+    <slot />
     <img src={path} alt={fileName} />
-) : (
+) : isTextLike && (content || renderIfEmpty) ? (
+    <slot />
+    <Code class="p-4 mockup-code" code={content} lang={ext} />
+) : content === null && (
+    <slot />
     <p>This file type cannot be previewed. Please download to view.</p>
 )}
+

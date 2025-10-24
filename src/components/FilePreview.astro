@@ -1,6 +1,5 @@
 ---
 import { permalink } from "@/util/link";
-import { readLocal, isText, isImage, getExt, isCode } from "@/util/files";
 
 import Renderer from './Renderer.astro';
 
@@ -9,13 +8,9 @@ import DownloadIcon from '@/assets/icons/download.svg';
 const { path, renderIfEmpty = true } = Astro.props;
 
 const fileName: string = path.split('/').pop() ?? '/';
-const ext: string = getExt(fileName);
-
-const content = isCode(ext) || isText(ext) ? readLocal(path) : null;
-const canRender = isImage(ext) || renderIfEmpty || content
 ---
 
-{canRender && (
+<Renderer path={path} renderIfEmpty={renderIfEmpty}>
   <div class="file-actions">
     <pre class="file-name">{fileName}</pre>
     <a href={permalink(path)} class="btn btn-accent" download>
@@ -23,9 +18,7 @@ const canRender = isImage(ext) || renderIfEmpty || content
       Download
     </a>
   </div>
-
-  <Renderer path={path} />
-)}
+</Renderer>
 
 <style>
   .file-actions {
