@@ -6,7 +6,7 @@ import SearchIcon from '@/assets/icons/search.svg';
   <label class="input w-full">
     <SearchIcon class="h-[1em] opacity-50" />
     <input type="search" id="searchInput" required placeholder="Search" autocomplete="off" />
-    <kbd class="kbd">Ctrl</kbd><kbd class="kbd">K</kbd>
+    <kbd class="kbd">t</kbd>
   </label>
   <ul id="searchResults" class="menu dropdown-content bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm w-full"></ul>
 </div>
@@ -37,29 +37,36 @@ import SearchIcon from '@/assets/icons/search.svg';
 
 <script>
   import { staticBrowse, staticPermalink } from "@/util/link";
+  import { isText, getExt } from "@/util/files";
+  import { fuzzySearchPaths } from "@/util/fuzzy";
 
-  type FileEntry = { path: string }
+  type FileEntry = { type: string, path: string }
 
-  let files: FileEntry[];
+  let files: string[];
 
   // Load files from JSON file
   async function loadFiles() {
+    let allFiles: FileEntry[];
     try {
       const response = await fetch(staticPermalink('files.json'));
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      files = await response.json();
-      console.log(`Loaded ${files.length} files`);
+      allFiles = await response.json();
+      console.log(`Loaded ${allFiles.length} files`);
     } catch (error) {
       console.error('Error loading files:', error);
       // Fallback to empty array or show error message
-      files = [];
+      allFiles = [];
     }
+
+    files = allFiles.filter(f => f.type == "directory" || isText(getExt(f.path))).map(f => f.path)
+    console.log(allFiles)
+    console.log(files)
   }
 
   document.addEventListener("keydown", (event) => {
-    if (event.ctrlKey && event.key === "k") {
+    if (event.key === "t") {
       event.preventDefault(); // Prevent default browser behavior (e.g., opening a search bar)
 
       const list = document.getElementById('searchInput') as HTMLElement;
@@ -77,34 +84,13 @@ import SearchIcon from '@/assets/icons/search.svg';
   const MAX_RESULTS = 50;
   const MIN_SEARCH_LENGTH = 3;
 
-  function fuzzySearch(query: string, items: FileEntry[]) {
-    if (!query || query.length < MIN_SEARCH_LENGTH) {
-      return [];
-    }
-    
-    const results = items.filter(item => {
-      const lowerQuery = query.toLowerCase();
-      const lowerItem = item.path.toLowerCase();
-      
-      let queryIndex = 0;
-      for (let i = 0; i < lowerItem.length && queryIndex < lowerQuery.length; i++) {
-        if (lowerItem[i] === lowerQuery[queryIndex]) {
-          queryIndex++;
-        }
-      }
-      return queryIndex === lowerQuery.length;
-    });
-    
-    return results.slice(0, MAX_RESULTS);
-  }
-
   function addResult(text: string, url: string, list: HTMLElement) {
     const li = document.createElement('li');
     li.innerHTML = `<a href="${url ? staticBrowse(url) : ''}">${text}</a>`;
     list.appendChild(li);
   }
 
-  function displayResults(results: any[], query: string) {
+  function displayResults(results: string[], query: string) {
     const list = document.getElementById('searchResults') as HTMLElement;
     list.innerHTML = '';
     
@@ -118,7 +104,7 @@ import SearchIcon from '@/assets/icons/search.svg';
       return;
     }
 
-    results.map(v => v.path).reverse().forEach(file => addResult(file, file, list));
+    results.forEach(file => addResult(file, file, list));
   }
 
   function setupSearch() {
@@ -126,17 +112,18 @@ import SearchIcon from '@/assets/icons/search.svg';
 
     let searchTimeout: any;
 
-    input.addEventListener('input', ({ target }) => {
+    input.addEventListener('input', _ => {
       clearTimeout(searchTimeout);
       
       searchTimeout = setTimeout(() => {
-        const query = target!.value;
-        const results = fuzzySearch(query, files);
+        const query = input.value;
+        const results = fuzzySearchPaths(query, files, MAX_RESULTS);
+        console.log(results)
         displayResults(results, query);
       }, 150);
     });
 
-    input.addEventListener('keyup', (e) => {
+    input.addEventListener('keyup', e => {
       if (e.key === 'Enter') {
         const result = document.getElementById('searchResults') as HTMLElement;
         const anchor = result.querySelector('a') as HTMLAnchorElement;

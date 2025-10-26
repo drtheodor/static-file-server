@@ -1,5 +1,7 @@
 ---
-import { getExt, isCode, isImage, isText, readLocal } from "@/util/files";
+import { getExt, isCode, isImage, isText } from "@/util/files";
+import { readLocal } from "@/util/filescan";
+
 import { Code } from "astro:components";
 
 const { path, renderIfEmpty } = Astro.props;

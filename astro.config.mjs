@@ -1,5 +1,5 @@
 // @ts-check
-import { writeIndex } from './src/util/files';
+import { writeIndex } from './src/util/filescan';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'astro/config';
 
