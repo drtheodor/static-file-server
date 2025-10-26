@@ -30,6 +30,5 @@ export function isImage(ext: string): boolean {
 }
 
 export function getExt(fpath: string): string {
-  console.log(fpath.substring(fpath.lastIndexOf('.') + 1))
   return fpath.substring(fpath.lastIndexOf('.') + 1);
 }

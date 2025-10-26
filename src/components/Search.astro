@@ -61,12 +61,10 @@ import SearchIcon from '@/assets/icons/search.svg';
     }
 
     files = allFiles.filter(f => f.type == "directory" || isText(getExt(f.path))).map(f => f.path)
-    console.log(allFiles)
-    console.log(files)
   }
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "t") {
+    if (event.key === "t" && !event.target) {
       event.preventDefault(); // Prevent default browser behavior (e.g., opening a search bar)
 
       const list = document.getElementById('searchInput') as HTMLElement;

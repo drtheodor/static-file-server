@@ -72,19 +72,3 @@ function calculateFuzzyScore(query: string, str: string): number {
 
     return score;
 }
-
-// Example usage:
-// const paths = [
-//     '/src/components/Header.tsx',
-//     '/src/utils/helpers.ts',
-//     '/src/components/Footer.tsx',
-//     '/src/services/api.ts',
-//     '/src/components/Navigation.tsx'
-// ];
-// 
-// console.log(fuzzySearchPaths('comp', paths));
-// Output: [
-//   '/src/components/Header.tsx',
-//   '/src/components/Footer.tsx',
-//   '/src/components/Navigation.tsx'
-// ]
