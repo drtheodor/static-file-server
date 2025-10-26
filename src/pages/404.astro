@@ -1,0 +1,22 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import Search from '@/components/Search.astro';
+
+import { unpermalink } from '@/util/link';
+---
+
+<Layout title="404">
+  <div class="divider">
+    <Search />
+  </div>
+
+  <div class="w-full mt-16 flex flex-col gap-6 text-xl text-center">
+    <h1 class="font-bold text-4xl">404</h1>
+    <h3>
+        Not found: 
+        <input type="text" placeholder={unpermalink(Astro.url.pathname)} class="input w-fit text-center" disabled />
+        .
+    </h3>
+  </div>
+</Layout>
+

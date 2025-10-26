@@ -1,5 +1,9 @@
 import path from 'path';
 
+export function unpermalink(url: string): string {
+    return url.substring(import.meta.env.BASE_URL.length);
+}
+
 export function join(...url: string[]): string {
     return path.posix.join(...url);
 }
