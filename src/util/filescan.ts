@@ -13,7 +13,7 @@ export function readLocal(fpath: string): string {
 export function lastEditedLocal(fpath: string): number {
   if (process.env.CI) {
     const lastCommitDate = proc.execSync(
-      `git log -1 --format=%ct -- "${fpath}"`,
+      `git log -1 --format=%ct -- "${path.posix.join('.', fpath)}"`,
       { encoding: 'utf-8', cwd: BASE_PATH }
     ).trim();
 
