@@ -12,7 +12,6 @@ export function readLocal(fpath: string): string {
 
 export function lastEditedLocal(fpath: string): number {
   if (process.env.CI) {
-    proc.execSync("", )
     const lastCommitDate = proc.execSync(
       `git log -1 --format=%ct -- "${fpath}"`,
       { encoding: 'utf-8', cwd: BASE_PATH }
