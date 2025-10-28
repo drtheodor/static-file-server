@@ -1,4 +1,5 @@
 import fs from 'fs';
+import proc from 'child_process'
 import path from 'path';
 
 import { type FileEntry } from "./files";
@@ -10,7 +11,19 @@ export function readLocal(fpath: string): string {
 }
 
 export function lastEditedLocal(fpath: string): number {
-  return fs.statSync(path.posix.join(BASE_PATH, fpath)).mtimeMs
+  fpath = path.posix.join(BASE_PATH, fpath);
+
+  if (process.env.CI) {
+    const lastCommitDate = proc.execSync(
+      `git log -1 --format=%ct -- "${fpath}"`,
+      { encoding: 'utf-8' }
+    ).trim();
+    
+    // Convert timestamp to Date object
+    return parseInt(lastCommitDate) * 1000;
+  }
+
+  return fs.statSync(fpath).mtimeMs
 }
 
 export function lastEditedUTC(fpath: string): number {
