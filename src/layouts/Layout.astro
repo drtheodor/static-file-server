@@ -3,6 +3,7 @@ import { ClientRouter, fade, slide } from "astro:transitions";
 import FavIcon from "@/assets/favicon.svg";
 
 import "@/assets/app.css";
+import GoogleAnalytics from "@/components/GoogleAnalytics.astro";
 
 type Props = {
   title: string,
@@ -29,6 +30,8 @@ switch (process.env.SFS_ANIM ?? 'fade') {
 
 const duration = process.env.SFS_ANIM_TIME ?? '0.1s';
 const anim = animFunc ? animFunc({ duration }) : "none";
+
+const googleAnalyticsTag = process.env.SFS_GOOGLE_ANALYTICS;
 ---
 
 <!DOCTYPE html>
@@ -41,6 +44,10 @@ const anim = animFunc ? animFunc({ duration }) : "none";
   <title>{title}</title>
 
   <ClientRouter />
+
+  { googleAnalyticsTag && (
+    <GoogleAnalytics analyticsId={googleAnalyticsTag} />
+  ) }
 </head>
 <body>
   <main transition:animate={anim}>
