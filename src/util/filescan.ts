@@ -11,12 +11,11 @@ export function readLocal(fpath: string): string {
 }
 
 export function lastEditedLocal(fpath: string): number {
-  fpath = path.posix.join(BASE_PATH, fpath);
-
   if (process.env.CI) {
+    proc.execSync("", )
     const lastCommitDate = proc.execSync(
       `git log -1 --format=%ct -- "${fpath}"`,
-      { encoding: 'utf-8' }
+      { encoding: 'utf-8', cwd: BASE_PATH }
     ).trim();
 
     console.log('File: ' + fpath + ' last commit date: ' + lastCommitDate)
@@ -24,6 +23,8 @@ export function lastEditedLocal(fpath: string): number {
     // Convert timestamp to Date object
     return parseInt(lastCommitDate) * 1000;
   }
+
+  fpath = path.posix.join(BASE_PATH, fpath);
 
   return fs.statSync(fpath).mtimeMs
 }
