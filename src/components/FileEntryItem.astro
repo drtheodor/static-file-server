@@ -31,7 +31,7 @@ const Icon = type === 'file' ? FileIcon : path === '../' ? ParentIcon : Director
         </div>
     </a>
 
-    <sfs-date class="tooltip" date={lastEditedUTC(path)}/>
+    <sfs-date class="tooltip" date={lastEditedUTC(join(parent, path))}/>
 
     <a href={permalink(parent, path)} download>
         <button class="btn btn-square btn-ghost">
