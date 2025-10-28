@@ -1,6 +1,7 @@
 ---
 import type { FileType } from '@/util/files'
 import { permalink, join } from '@/util/link';
+import { lastEditedLocal, lastEditedUTC } from '@/util/filescan';
 
 interface Props {
     parent: string,
@@ -18,7 +19,7 @@ import DownloadIcon from '@/assets/icons/download.svg';
 const Icon = type === 'file' ? FileIcon : path === '../' ? ParentIcon : DirectoryIcon;
 ---
 
-<li class="list-row">
+<li class="list-row items-center">
     <div>
         <Icon class="size-9" />
     </div>
@@ -28,13 +29,75 @@ const Icon = type === 'file' ? FileIcon : path === '../' ? ParentIcon : Director
             <div>{path}</div>
             <div class="text-xs uppercase font-semibold opacity-60">{join(parent, path)}</div>
         </div>
+    </a>
 
-        <a href={permalink(parent, path)} download>
-            <button class="btn btn-square btn-ghost">
-                {type === 'file' && (
-                    <DownloadIcon class="size-[1.5em]" />
-                )}
-            </button>
-        </a>
+    <sfs-date class="tooltip" date={lastEditedUTC(path)}/>
+
+    <a href={permalink(parent, path)} download>
+        <button class="btn btn-square btn-ghost">
+            { type === 'file' && (
+                <DownloadIcon class="size-[1.5em]" />
+            ) }
+        </button>
     </a>
 </li>
+
+<script>
+    function convert(millis: number) {
+        const date = new Date(millis)
+        const now = new Date();
+        
+        // Calculate the difference in seconds
+        const diffSeconds = Math.floor((date - now) / 1000);
+        
+        // Define thresholds for different time units
+        const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
+        
+        const DIVISIONS = [
+            { amount: 60, name: 'second' },
+            { amount: 60, name: 'minute' },
+            { amount: 24, name: 'hour' },
+            { amount: 7, name: 'day' },
+            { amount: 4.34524, name: 'week' },
+            { amount: 12, name: 'month' },
+            { amount: Number.POSITIVE_INFINITY, name: 'year' }
+        ];
+        
+        let duration = Math.abs(diffSeconds);
+        let unit = 'second';
+        
+        for (const division of DIVISIONS) {
+            if (duration < division.amount) {
+                unit = division.name;
+                break;
+            }
+            duration /= division.amount;
+        }
+        
+        duration = Math.floor(duration) * Math.sign(diffSeconds);
+        
+        // Format the relative time
+        const timeAgo = rtf.format(duration, unit);
+        
+        return {
+            timeAgo,
+            originalDate: date.toLocaleString(),
+            utcTime: date.toISOString()
+        };
+    }
+
+    const timezoneOffset = new Date().getTimezoneOffset() * 60_000
+
+    class DateTime extends HTMLElement {
+
+        connectedCallback() {
+            const rawDate = parseInt((this.attributes.date as Attr).value);
+            const date = convert(rawDate + timezoneOffset)
+
+            this.innerText = date.timeAgo;
+            this.setAttribute('data-tip', date.originalDate);
+        }
+    }
+
+    customElements.define('sfs-date', DateTime)
+</script>

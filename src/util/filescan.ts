@@ -9,6 +9,15 @@ export function readLocal(fpath: string): string {
   return fs.readFileSync(path.posix.join(BASE_PATH, fpath)).toString();
 }
 
+export function lastEditedLocal(fpath: string): number {
+  return fs.statSync(path.posix.join(BASE_PATH, fpath)).mtimeMs
+}
+
+export function lastEditedUTC(fpath: string): number {
+  const localDate = new Date(lastEditedLocal(fpath));
+  return localDate.getTime() - localDate.getTimezoneOffset() * 60000;
+}
+
 export function scanDirectory(
   dir: string,
   options: { recursive?: boolean } = {},
