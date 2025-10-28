@@ -86,13 +86,11 @@ const Icon = type === 'file' ? FileIcon : path === '../' ? ParentIcon : Director
         };
     }
 
-    const timezoneOffset = new Date().getTimezoneOffset() * 60_000
-
     class DateTime extends HTMLElement {
 
         connectedCallback() {
             const rawDate = parseInt((this.attributes.date as Attr).value);
-            const date = convert(rawDate + timezoneOffset)
+            const date = convert(rawDate)
 
             this.innerText = date.timeAgo;
             this.setAttribute('data-tip', date.originalDate);

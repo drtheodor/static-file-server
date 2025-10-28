@@ -15,7 +15,7 @@ export function lastEditedLocal(fpath: string): number {
 
 export function lastEditedUTC(fpath: string): number {
   const localDate = new Date(lastEditedLocal(fpath));
-  return localDate.getTime() - localDate.getTimezoneOffset() * 60000;
+  return localDate.getTime();
 }
 
 export function scanDirectory(
