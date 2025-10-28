@@ -46,7 +46,7 @@ const googleAnalyticsTag = process.env.SFS_GOOGLE_ANALYTICS;
   <ClientRouter />
 
   { googleAnalyticsTag && (
-    <GoogleAnalytics analyticsId={googleAnalyticsTag} />
+    <GoogleAnalytics gid={googleAnalyticsTag} />
   ) }
 </head>
 <body>
