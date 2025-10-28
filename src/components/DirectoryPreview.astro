@@ -5,9 +5,10 @@ import FilePreview from './FilePreview.astro';
 
 interface Props {
     path: string,
+    showDate: boolean,
 }
 
-const { path } = Astro.props;
+const { path, showDate } = Astro.props;
 
 const isRoot = path === '/';
 const items = scanDirectory(path);
@@ -22,7 +23,7 @@ if (!isRoot) items.push({ path: '../', type: 'directory' });
         .filter(v => v.path)
         .sort((a, b) => a.type.localeCompare(b.type) || a.path.localeCompare(b.path))
         .map(item => {
-            return (<FileEntryItem parent={path} {...item} />);
+            return (<FileEntryItem parent={path} {...item} showDate={showDate} />);
         })
     }
 

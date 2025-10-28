@@ -16,10 +16,7 @@ export function lastEditedLocal(fpath: string): number {
       `git log -1 --format=%ct -- "${path.posix.join('.', fpath)}"`,
       { encoding: 'utf-8', cwd: BASE_PATH }
     ).trim();
-
-    console.log('File: ' + fpath + ' last commit date: ' + lastCommitDate)
     
-    // Convert timestamp to Date object
     return parseInt(lastCommitDate) * 1000;
   }
 

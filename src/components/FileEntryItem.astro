@@ -1,15 +1,16 @@
 ---
 import type { FileType } from '@/util/files'
 import { permalink, join } from '@/util/link';
-import { lastEditedLocal, lastEditedUTC } from '@/util/filescan';
+import { lastEditedUTC } from '@/util/filescan';
 
 interface Props {
     parent: string,
     path: string,
     type: FileType,
+    showDate: boolean,
 }
 
-const { parent, path, type } = Astro.props;
+const { parent, path, type, showDate } = Astro.props;
 
 import DirectoryIcon from '@/assets/icons/directory.svg'; 
 import ParentIcon from '@/assets/icons/parent.svg';
@@ -17,6 +18,9 @@ import FileIcon from '@/assets/icons/file.svg';
 import DownloadIcon from '@/assets/icons/download.svg';
 
 const Icon = type === 'file' ? FileIcon : path === '../' ? ParentIcon : DirectoryIcon;
+
+const fullpath = join(parent, path);
+const date = showDate ? lastEditedUTC(fullpath) : null;
 ---
 
 <li class="list-row items-center">
@@ -27,11 +31,13 @@ const Icon = type === 'file' ? FileIcon : path === '../' ? ParentIcon : Director
     <a href={path} data-astro-prefetch>
         <div>
             <div>{path}</div>
-            <div class="text-xs uppercase font-semibold opacity-60">{join(parent, path)}</div>
+            <div class="text-xs uppercase font-semibold opacity-60">{fullpath}</div>
         </div>
     </a>
 
-    <sfs-date class="tooltip" date={lastEditedUTC(join(parent, path))}/>
+    { date && (
+        <sfs-date class="tooltip" date={date}/>
+    ) }
 
     <a href={permalink(parent, path)} download>
         <button class="btn btn-square btn-ghost">

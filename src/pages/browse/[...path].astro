@@ -20,6 +20,7 @@ interface Props {
 }
 
 const { path, type } = Astro.props;
+const showDate = (process.env.SFS_DATE || 'true') == 'true';
 ---
 
 <Layout title={`Viewing: ${path}`}>
@@ -44,7 +45,7 @@ const { path, type } = Astro.props;
   {type == 'file' ? (
     <FilePreview path={path} />
   ) : (
-    <DirectoryPreview path={path} /> 
+    <DirectoryPreview path={path} showDate={showDate} /> 
   )}
 </Layout>
 
